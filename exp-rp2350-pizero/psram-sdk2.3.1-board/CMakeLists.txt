@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.12)
 
 # Change your executable name to something creative!
 set(NAME test) # <-- Name your project/executable here!
-set(PICO_BOARD waveshare_rp2350_pizero)
+set(PICO_BOARD_HEADER_DIRS ${CMAKE_CURRENT_LIST_DIR}/boards) 
+set(PICO_BOARD waveshare_rp2350_pizero_psram)
 set(PICO_PLATFORM rp2350)
 
 
@@ -20,7 +21,6 @@ pico_sdk_init()
 
 add_subdirectory(src)
 
-pico_set_linker_script(${NAME} ${CMAKE_SOURCE_DIR}/rp2350-pizero-sram.ld)
 
 #Set up files for the release packages
 install(CODE "execute_process(COMMAND $ENV{HOME}/bin/picoDeploy.sh ${CMAKE_CURRENT_BINARY_DIR}/src/${NAME}.elf)")

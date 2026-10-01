@@ -9,11 +9,6 @@ target_link_libraries(${NAME}
 	hardware_psram
 )
 
-target_compile_definitions(${NAME} PUBLIC 
-	PICO_PSRAM_CS_PIN=47
-	PICO_PSRAM_SIZE_BYTES=8388608
-)
-
 # create map/bin/hex file etc.
 pico_add_extra_outputs(${NAME})
 

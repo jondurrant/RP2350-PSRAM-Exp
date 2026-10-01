@@ -45,6 +45,7 @@ void runTest(int *p, size_t len){
 
 void testSHA(int *p, size_t len){
 	pico_sha256_state_t state;
+	uint64_t start = to_us_since_boot (get_absolute_time());
 	int rc = pico_sha256_start_blocking(&state, SHA256_BIG_ENDIAN, true); // using some DMA system resources
 	hard_assert(rc == PICO_OK);
 	pico_sha256_update_blocking(&state, (const uint8_t*)p, sizeof(int) * len);
@@ -52,6 +53,10 @@ void testSHA(int *p, size_t len){
 	// Get the result of the sha256 calculation
 	sha256_result_t result;
 	pico_sha256_finish(&state, &result);
+
+	uint64_t end = to_us_since_boot (get_absolute_time());
+	uint64_t ms = end - start;
+	printf("SHA Completed in %llu us\n", ms);
 
 	// print resulting sha256 result
 	printf("Result:\n");
@@ -75,17 +80,13 @@ int main() {
 
 	    printf("RAM Test\n");
 	    runTest(test_ram, TEST_SIZE);
+	    testSHA(test_ram, TEST_SIZE);
 
 	    printf("PSRAM Test\n");
 	    runTest(test_psramA, TEST_SIZE);
-
-	    testSHA(test_ram, TEST_SIZE);
 	    testSHA(test_psramA, TEST_SIZE);
-
-
 
 	    while (true) {
 	        sleep_ms(3000);
-	        printf("Hello\n");
 	    }
 }

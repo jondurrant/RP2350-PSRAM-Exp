@@ -6,8 +6,9 @@ add_executable(${NAME}
 target_link_libraries(${NAME} 
 	pico_stdlib
 	pico_sha256
-	pico_status_led
+	hardware_psram
 )
+
 
 # create map/bin/hex file etc.
 pico_add_extra_outputs(${NAME})

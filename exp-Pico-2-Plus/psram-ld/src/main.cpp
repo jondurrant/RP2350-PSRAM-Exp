@@ -8,13 +8,14 @@
 #include <cstdlib>
 #include "hardware/regs/xip.h"
 #include "hardware/structs/xip.h"
+#include "pico/sha256.h"
 extern "C"{
 #include "pico/status_led.h"
 }
 #include <cstdio>
 
 #define DELAY 500 // in microseconds
-#define TEST_SIZE (1024*8)
+#define TEST_SIZE (1024*32)
 
 __attribute__((section(".psram"))) uint8_t test_psramA[0x40000];
 __attribute__((section(".psram"))) uint8_t test_psramB[0x40000];
@@ -39,6 +40,29 @@ void runTest(int *p, size_t len){
 	printf("Completed in %llu us\n", ms);
 }
 
+void testSHA(int *p, size_t len){
+	pico_sha256_state_t state;
+	uint64_t start = to_us_since_boot (get_absolute_time());
+	int rc = pico_sha256_start_blocking(&state, SHA256_BIG_ENDIAN, true); // using some DMA system resources
+	hard_assert(rc == PICO_OK);
+	pico_sha256_update_blocking(&state, (const uint8_t*)p, sizeof(int) * len);
+
+	// Get the result of the sha256 calculation
+	sha256_result_t result;
+	pico_sha256_finish(&state, &result);
+
+	uint64_t end = to_us_since_boot (get_absolute_time());
+	uint64_t ms = end - start;
+	printf("SHA Completed in %llu us\n", ms);
+
+	// print resulting sha256 result
+	printf("Result:\n");
+	for(int i = 0; i < SHA256_RESULT_BYTES; i++) {
+		printf("%02x ", result.bytes[i]);
+		if ((i+1) % 16 == 0) printf("\n");
+	}
+}
+
 int main() {
 		stdio_init_all();
 
@@ -56,12 +80,12 @@ int main() {
 	    printf("RAM Test\n");
 	    int * ram = (int *)malloc(sizeof(int) * TEST_SIZE );
 	    runTest(ram, TEST_SIZE);
+	    testSHA(ram, TEST_SIZE);
 
 	    printf("PSRAM Test\n");
 	    int * psram = (int *)0x11000000;
 	    runTest(psram, TEST_SIZE);
-
-
+	    testSHA(psram, TEST_SIZE);
 
 
 	    while (true) {
@@ -69,7 +93,6 @@ int main() {
 	        sleep_ms(DELAY);
 	        status_led_set_state(false);
 	        sleep_ms(DELAY);
-	        printf("Hello\n");
 	    }
 	    status_led_deinit();
 }

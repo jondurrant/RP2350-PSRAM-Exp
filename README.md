@@ -14,13 +14,13 @@ Board files exist that include the PSRM configuration for this board which makes
 
 - psram-raw: In this example I setup the PSRAM but just use it as raw memory space, without telling the  linker about it
 - psram-ld: In this example, which is pre SDK 2.3.0 I setup the Linker description manually. This means I can mark variables as to be locatred in PSRAM
-- psram-sdk2.3.1: This makes use of the new hardware_psram library to really set the PSRAM up properly. Only in this example is the QSPI but put into quad mode and driven at the full 133 that this chip will support
+- psram-sdk2.3.1: This makes use of the new hardware_psram library to really set the PSRAM up properly. Only in this example is the QSPI bus put into quad mode and driven at the full 133MHz that this chip will support (266MHz system clock divided by 2)
 
 ### RP2350-PIZero
 This board from waveshare comes with a slot to add PSRAM onto. This means that the board configuration file does not define the PSRAM setup.
 
 - psram-ld: This setups a linker description and tests out PSRAM. Only at SPI speeds
-- psram-sdk2-3-1: This uses the new hardware-psram library to initialise and set the speed of the bus to 133. It does also require a linker description file though due to the PSRAM definitions not being present in the board description file.  It makes build a bit more awkward.
+- psram-sdk2-3-1: This uses the new hardware-psram library to initialise and set the speed of the bus to 133MHz (266MHz system clock divided by 2). It does also require a linker description file though due to the PSRAM definitions not being present in the board description file.  It makes build a bit more awkward.
 - psram-sdk2.3.1-board: This adds a local board description file for the board with the PSRAM definitions. Therefore this example does not need the linker description file. Much easier to work with.
 
 ## Cloning and Building
